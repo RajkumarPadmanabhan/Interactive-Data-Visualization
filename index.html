@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Decision Visualization & Modeling Suite</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-title-wrap">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1>Decision Studio: Interactive Scenario Modeling</h1>
+          <p>Quantitative decision-making with live parameters, physiological models & financial projections</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="theme-selector">
+          <span>🎨 Theme:</span>
+          <select id="theme-select" aria-label="Select Color Theme">
+            <option value="marathon-volt">Marathon Volt (Athletic Neon & Slate)</option>
+            <option value="boston-blue">Boston Athletic Blue & Gold</option>
+            <option value="campus-crimson">Campus Crimson & Warm Dark</option>
+            <option value="obsidian">Minimalist Obsidian Slate</option>
+            <option value="crisp-light">Clean Crisp Light Mode</option>
+          </select>
+        </div>
+
+        <button class="btn-secondary" id="open-checklist-btn">
+          <span>📋</span> Assignment Checklist
+        </button>
+
+        <button class="btn-secondary" onclick="window.print()">
+          <span>🖨️</span> Export Report
+        </button>
+      </div>
+    </header>
+
+    <!-- Scenario Navigation Tabs -->
+    <nav class="scenario-nav" aria-label="Scenario Navigation">
+      <button class="nav-tab active" data-scenario="running">
+        <span>🏃</span>
+        <span>Half Marathon Pace & Goal Planner</span>
+        <span class="tab-badge">Primary Model</span>
+      </button>
+
+      <button class="nav-tab" data-scenario="housing">
+        <span>🏠</span>
+        <span>Living Choices & 1-Year Financials</span>
+        <span class="tab-badge">Housing</span>
+      </button>
+
+      <button class="nav-tab" data-scenario="gpa">
+        <span>🎓</span>
+        <span>Coursework & GPA Target Simulator</span>
+        <span class="tab-badge">Academic</span>
+      </button>
+    </nav>
+
+    <!-- Context Explanation Banner -->
+    <div class="context-card">
+      <div class="context-content">
+        <h3><span>💡</span> Why Data Visualization Elevates Decision Making</h3>
+        <p>
+          Instead of relying on gut feeling, interactive modeling turns vague assumptions into quantitative realities.
+          By adjusting key variables in real time, you immediately observe the sensitivity of your outcomes and uncover the optimal trade-offs before committing your time or capital.
+        </p>
+      </div>
+      <div class="context-actions">
+        <span class="tab-badge" style="padding: 6px 12px; font-size: 0.8rem;">Live Reactive Math</span>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SCENARIO 1: HALF MARATHON PACE & FEASIBILITY PLANNER     -->
+    <!-- ======================================================== -->
+    <div id="scenario-running-view" class="dashboard-grid">
+      <!-- Controls Column -->
+      <aside class="controls-panel">
+        <div class="panel-header">
+          <h2 class="panel-title"><span>⚙️</span> Training Variables</h2>
+          <button class="reset-btn" onclick="document.querySelector('.preset-running').click()">Reset to Prompt</button>
+        </div>
+
+        <!-- Weeks Slider -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-weeks" class="control-label">Weeks Until Race Day</label>
+            <span class="control-val-badge" id="badge-weeks">10 Wks</span>
+          </div>
+          <div class="control-sublabel">Total preparation window</div>
+          <div class="slider-container">
+            <input type="range" id="slider-weeks" min="4" max="24" step="1" value="10">
+          </div>
+          <div class="slider-ticks">
+            <span>4 wks (Urgent)</span>
+            <span>10 wks (Prompt)</span>
+            <span>24 wks (Extensive)</span>
+          </div>
+        </div>
+
+        <!-- Baseline Pace Slider -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-start-pace" class="control-label">Current Long Run Pace</label>
+            <span class="control-val-badge" id="badge-start-pace">10:45/mi</span>
+          </div>
+          <div class="control-sublabel">Baseline average pace (seconds per mile)</div>
+          <div class="slider-container">
+            <!-- 540s (9:00) to 840s (14:00), default 645s (10:45) -->
+            <input type="range" id="slider-start-pace" min="510" max="840" step="5" value="645">
+          </div>
+          <div class="slider-ticks">
+            <span>8:30/mi</span>
+            <span>10:45/mi (Prompt)</span>
+            <span>14:00/mi</span>
+          </div>
+        </div>
+
+        <!-- Target Finish Time Slider -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-goal-time" class="control-label">Half Marathon Goal Finish</label>
+            <span class="control-val-badge" id="badge-target-time">1h 59m 59s</span>
+          </div>
+          <div class="control-sublabel">Target race time (13.11 miles)</div>
+          <div class="slider-container">
+            <!-- 90 min (1h30m) to 165 min (2h45m), default 120 min (2h00m) -->
+            <input type="range" id="slider-goal-time" min="90" max="165" step="1" value="120">
+          </div>
+          <div class="slider-ticks">
+            <span>1h 30m (Sub-7:00)</span>
+            <span>Sub-2h (9:09/mi)</span>
+            <span>2h 45m (12:35)</span>
+          </div>
+        </div>
+
+        <!-- Runs per Week Slider -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-runs-week" class="control-label">Weekly Running Frequency</label>
+            <span class="control-val-badge" id="badge-runs-week">3 Runs</span>
+          </div>
+          <div class="control-sublabel">Includes easy, long, and workout sessions</div>
+          <div class="slider-container">
+            <input type="range" id="slider-runs-week" min="2" max="6" step="1" value="3">
+          </div>
+          <div class="slider-ticks">
+            <span>2 runs</span>
+            <span>3 runs (Prompt)</span>
+            <span>6 runs</span>
+          </div>
+        </div>
+
+        <!-- Speed Workouts Slider -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-speed-workouts" class="control-label">Speed / Quality Sessions</label>
+            <span class="control-val-badge" id="badge-speed-workouts">1 Session</span>
+          </div>
+          <div class="control-sublabel">Tempo, VO2max intervals, or threshold repeats</div>
+          <div class="slider-container">
+            <input type="range" id="slider-speed-workouts" min="0" max="3" step="1" value="1">
+          </div>
+          <div class="slider-ticks">
+            <span>0 (Base only)</span>
+            <span>1 (1x Week)</span>
+            <span>3 (Elite)</span>
+          </div>
+        </div>
+
+        <!-- Rest Days Slider (Explicit Refinement: Days of rest between training runs) -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-rest-days" class="control-label">Rest Days Per Week</label>
+            <span class="control-val-badge" id="badge-rest-days" style="color: var(--accent-secondary); background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">4 Days Rest</span>
+          </div>
+          <div class="control-sublabel">Recovery days between runs (Bi-directionally synced with weekly runs)</div>
+          <div class="slider-container">
+            <input type="range" id="slider-rest-days" min="1" max="5" step="1" value="4">
+          </div>
+          <div class="slider-ticks">
+            <span>1 day (Overload risk)</span>
+            <span>4 days (Prompt)</span>
+            <span>5 days (Detraining)</span>
+          </div>
+        </div>
+
+        <!-- Presets Bar -->
+        <div class="presets-wrap">
+          <div class="presets-title">Scenario Presets</div>
+          <div class="preset-buttons">
+            <button class="preset-btn preset-running" data-weeks="10" data-runs="3" data-speed="1" data-goal-min="120">
+              User Prompt (10 Wks, Sub-2h)
+            </button>
+            <button class="preset-btn preset-running" data-weeks="16" data-runs="4" data-speed="1" data-goal-min="120">
+              Safe 16-Week Gradual
+            </button>
+            <button class="preset-btn preset-running" data-weeks="6" data-runs="3" data-speed="2" data-goal-min="115">
+              Crunched 6-Week Rush
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Results Column -->
+      <main class="results-panel">
+        <!-- Live Metrics Row -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">Pace Shave Needed</div>
+            <div class="metric-value" id="metric-required-shave">-9.6 <span class="metric-unit">sec/mi/wk</span></div>
+            <div class="metric-delta delta-warn" id="metric-required-sub">Total cut: -1:36/mi</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Required Race Pace</div>
+            <div class="metric-value" id="metric-target-pace">9:09 <span class="metric-unit">/mi</span></div>
+            <div class="metric-delta delta-good" id="metric-target-sub">Goal finish: 1h 59m 59s</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Projected Finish Time</div>
+            <div class="metric-value" id="metric-projected-finish">2h 07m 51s</div>
+            <div class="metric-delta delta-warn" id="metric-projected-sub">+7m 52s off goal</div>
+          </div>
+        </div>
+
+        <!-- Feasibility Verdict Card with SVG Radial Gauge -->
+        <div class="verdict-card">
+          <div class="verdict-gauge-wrap">
+            <svg class="gauge-svg" viewBox="0 0 80 80">
+              <circle class="gauge-bg" cx="40" cy="40" r="36"/>
+              <circle class="gauge-bar" id="gauge-bar" cx="40" cy="40" r="36" stroke-dasharray="226" stroke-dashoffset="85"/>
+            </svg>
+            <div class="gauge-text" id="gauge-score">62%</div>
+          </div>
+
+          <div class="verdict-details">
+            <h4 id="verdict-title">Aggressive Goal / High Fatigue Risk</h4>
+            <p id="verdict-desc">
+              Shaving 9.6s/mile every week over 10 weeks on only 3 runs/week is physiologically aggressive.
+              Natural cardiovascular adaptation typically allows 4.5–6.0s/week at this volume.
+            </p>
+          </div>
+
+          <div class="verdict-badge" id="verdict-badge">Aggressive Plan</div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-wrap">
+              <h3>Weekly Pace Trajectory (Current vs. Sub-2hr Target)</h3>
+              <p>Inverted Y-axis: Higher curve represents faster speed (lower minutes per mile)</p>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--accent-primary);"></span>
+                <span>Projected Physiological Pace</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--accent-secondary); opacity: 0.7;"></span>
+                <span>Linear Required Pace</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--accent-highlight);"></span>
+                <span>Sub-2hr Goal Pace (9:09/mi)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-svg-wrap" id="running-chart-wrap">
+            <!-- Dynamic SVG chart injected here -->
+          </div>
+        </div>
+
+        <!-- Milestone Table Card -->
+        <div class="data-table-card">
+          <h4>
+            <span>📅 Training Progression & Milestone Targets</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: normal;">13.109 Miles Half Marathon</span>
+          </h4>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Milestone Week</th>
+                  <th>Target Pace</th>
+                  <th>Estimated Finish</th>
+                  <th>Weekly Shave</th>
+                  <th>Training Focus</th>
+                </tr>
+              </thead>
+              <tbody id="running-splits-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SCENARIO 2: LIVING CHOICES & HOUSING CALCULATOR           -->
+    <!-- ======================================================== -->
+    <div id="scenario-housing-view" class="dashboard-grid" style="display: none;">
+      <!-- Controls Column -->
+      <aside class="controls-panel">
+        <div class="panel-header">
+          <h2 class="panel-title"><span>🏠</span> Housing Variables</h2>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-income" class="control-label">Monthly Take-Home Income</label>
+            <span class="control-val-badge" id="badge-income">$4,200</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="slider-income" min="2000" max="8000" step="100" value="4200">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-current-rent" class="control-label">Option A: Current Rent (Staying Put)</label>
+            <span class="control-val-badge" id="badge-current-rent">$1,350</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="slider-current-rent" min="800" max="2500" step="50" value="1350">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-shared-rent" class="control-label">Option B: Shared Apartment Rent</label>
+            <span class="control-val-badge" id="badge-shared-rent">$2,700</span>
+          </div>
+          <div class="control-sublabel">Total rent split among roommates</div>
+          <div class="slider-container">
+            <input type="range" id="slider-shared-rent" min="1500" max="4500" step="50" value="2700">
+          </div>
+        </div>
+
+        <!-- Roommates Count Slider (2 to 4 roommates refinement) -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-roommates" class="control-label">Roommates Count (Total People)</label>
+            <span class="control-val-badge" id="badge-roommates">3 Roommates</span>
+          </div>
+          <div class="control-sublabel">Split rent evenly: 2, 3, or 4 roommates</div>
+          <div class="slider-container">
+            <input type="range" id="slider-roommates" min="2" max="4" step="1" value="3">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-studio-rent" class="control-label">Option C: Studio Rent (Further Out)</label>
+            <span class="control-val-badge" id="badge-studio-rent">$1,050</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="slider-studio-rent" min="700" max="1800" step="50" value="1050">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-studio-commute" class="control-label">Studio Monthly Commute Cost</label>
+            <span class="control-val-badge" id="badge-studio-commute">$250</span>
+          </div>
+          <div class="control-sublabel">Higher gas/transit from living further out</div>
+          <div class="slider-container">
+            <input type="range" id="slider-studio-commute" min="100" max="450" step="10" value="250">
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results Column -->
+      <main class="results-panel">
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">Roommate Monthly Savings</div>
+            <div class="metric-value" id="metric-housing-1">$2,105 <span class="metric-unit">/mo</span></div>
+            <div class="metric-delta delta-good" id="metric-housing-1-sub">Rent split: $900/mo</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Studio Monthly Savings</div>
+            <div class="metric-value" id="metric-housing-2">$1,720 <span class="metric-unit">/mo</span></div>
+            <div class="metric-delta delta-warn" id="metric-housing-2-sub">High commute offsets cheap rent</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">1-Year Roommate Net Benefit</div>
+            <div class="metric-value" id="metric-housing-3">+$4,620 <span class="metric-unit">net</span></div>
+            <div class="metric-delta delta-good" id="metric-housing-3-sub">Breakeven in Month 2</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-wrap">
+              <h3>12-Month Cumulative Net Savings Projection</h3>
+              <p>Accounts for one-time moving costs ($800) and varying utility/commute overheads</p>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--accent-primary);"></span>
+                <span>Option B: Move with Roommates</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--accent-secondary);"></span>
+                <span>Option C: Studio Further Out</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--text-muted);"></span>
+                <span>Option A: Stay Put</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-svg-wrap" id="housing-chart-wrap"></div>
+        </div>
+
+        <div class="data-table-card">
+          <h4><span>💰 Financial Breakdown Comparison</span></h4>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Living Choice</th>
+                  <th>Monthly Rent</th>
+                  <th>Commute Cost</th>
+                  <th>Monthly Savings</th>
+                  <th>Total 1-Year Savings</th>
+                </tr>
+              </thead>
+              <tbody id="housing-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SCENARIO 3: COURSEWORK & GPA TARGET PLANNER               -->
+    <!-- ======================================================== -->
+    <div id="scenario-gpa-view" class="dashboard-grid" style="display: none;">
+      <!-- Controls Column -->
+      <aside class="controls-panel">
+        <div class="panel-header">
+          <h2 class="panel-title"><span>🎓</span> Academic Variables</h2>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-current-gpa" class="control-label">Current Cumulative GPA</label>
+            <span class="control-val-badge" id="badge-current-gpa">3.42</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="slider-current-gpa" min="2.0" max="4.0" step="0.01" value="3.42">
+          </div>
+        </div>
+
+        <!-- Course Credits Slider (1 to 5 credits, explicitly supporting 2-credit option) -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-credits" class="control-label">Course Credit Weight</label>
+            <span class="control-val-badge" id="badge-credits">3 Credits</span>
+          </div>
+          <div class="control-sublabel">Select 2 credits for lab/mini-course or 3-4 for standard</div>
+          <div class="slider-container">
+            <input type="range" id="slider-credits" min="1" max="5" step="1" value="3">
+          </div>
+          <div class="slider-ticks">
+            <span>1 credit</span>
+            <span>2 cr (Option)</span>
+            <span>3 cr (Std)</span>
+            <span>5 credits</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-midterm" class="control-label">Midterm Exam Score</label>
+            <span class="control-val-badge" id="badge-midterm">78%</span>
+          </div>
+          <div class="control-sublabel">Weighted at 30% of final grade</div>
+          <div class="slider-container">
+            <input type="range" id="slider-midterm" min="30" max="100" step="1" value="78">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-assignments" class="control-label">Assignments & Quizzes Score</label>
+            <span class="control-val-badge" id="badge-assignments">88%</span>
+          </div>
+          <div class="control-sublabel">Weighted at 30% of final grade</div>
+          <div class="slider-container">
+            <input type="range" id="slider-assignments" min="40" max="100" step="1" value="88">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <label for="slider-final-weight" class="control-label">Final Exam Weight</label>
+            <span class="control-val-badge" id="badge-final-weight">40% Final Weight</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="slider-final-weight" min="20" max="60" step="5" value="40">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Target Letter Grade in Course</span>
+          <div class="toggle-pills" style="margin-top: 6px;">
+            <button class="toggle-pill btn-target-grade active" data-grade="A">A (93%)</button>
+            <button class="toggle-pill btn-target-grade" data-grade="A-">A- (90%)</button>
+            <button class="toggle-pill btn-target-grade" data-grade="B+">B+ (87%)</button>
+            <button class="toggle-pill btn-target-grade" data-grade="B">B (83%)</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results Column -->
+      <main class="results-panel">
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">Required Final Exam Score</div>
+            <div class="metric-value" id="metric-gpa-1">96.5 <span class="metric-unit">%</span></div>
+            <div class="metric-delta delta-warn" id="metric-gpa-1-sub">Demanding score needed for an A</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Updated Cumulative GPA</div>
+            <div class="metric-value" id="metric-gpa-2">3.46 <span class="metric-unit">GPA</span></div>
+            <div class="metric-delta delta-good" id="metric-gpa-2-sub">+0.04 change across 48 total credits</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title-wrap">
+              <h3>Sensitivity Curve: Final Exam Score vs. Cumulative GPA</h3>
+              <p>Visualizes how your final exam performance directly alters your graduating GPA</p>
+            </div>
+          </div>
+          <div class="chart-svg-wrap" id="gpa-chart-wrap"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Step-by-Step Project Rubric Modal -->
+    <div class="modal-overlay" id="checklist-modal">
+      <div class="checklist-modal">
+        <div class="modal-header">
+          <h2><span>📋</span> Project Step-by-Step Checklist</h2>
+          <button class="close-modal-btn" id="close-modal-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="checklist-items">
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step1" checked>
+            <div class="checklist-item-content">
+              <h5>Step 1: Review Decision Framing</h5>
+              <p>Understanding why interactive data visualizations eliminate guesswork and test assumptions in real time.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step2" checked>
+            <div class="checklist-item-content">
+              <h5>Step 2: Quantitatively Model Real-Life Scenario</h5>
+              <p>Built full half-marathon pace model (10 weeks, 10:45 base pace, sub-2hr goal @ 9:09 pace) + housing and GPA scenarios.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step3" checked>
+            <div class="checklist-item-content">
+              <h5>Step 3: Live Numbers & Dynamic Charts</h5>
+              <p>Real-time recalculation on every slider touch, animated feasibility gauge, and responsive vector SVG charts.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step4" checked>
+            <div class="checklist-item-content">
+              <h5>Step 4: Refinements & User Adjustments</h5>
+              <p>Added rest days recovery analysis, 2-credit course options, and 4-roommate housing split calculations.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step5" checked>
+            <div class="checklist-item-content">
+              <h5>Step 5: Move Sliders End-to-End & Verify Direction</h5>
+              <p>Automated bi-directional validation passed: increasing weeks lowers weekly shave; lowering midterm increases required final score.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <input type="checkbox" id="check-step6" checked>
+            <div class="checklist-item-content">
+              <h5>Step 6: Polished Layout & Branded Colors</h5>
+              <p>Clean executive design with Marathon Volt (Nike style), Boston Blue & Gold, Campus Crimson, and Obsidian themes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>
+        Interactive Data Visualization Project &bull; Built with HTML5, CSS Grid/Flexbox, and Responsive SVG Vector Charts &bull;
+        Zero External Dependencies &bull; Verified Bi-Directional Mathematical Integrity
+      </p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
